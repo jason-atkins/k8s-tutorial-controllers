@@ -1,0 +1,39 @@
+apiVersion: v1
+kind: Service
+metadata: 
+  name: backend
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+  - protocol: TCP
+    port: 5001
+    targetPort: 5001
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels: 
+    app: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  strategy:
+    rollingUpdate:
+      maxSurge: 20%
+      maxUnavailable: 20%
+  template:
+    metadata: 
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: htrvolker/python-backend:numbers
+        ports:
+        - containerPort: 5001
